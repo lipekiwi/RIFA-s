@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Rifa</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .number {
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid #ccc;
+      font-weight: bold;
+    }
+
+    .vendido {
+      background: #ffcccc;
+      border-color: #ff4d4d;
+    }
+
+    .pago {
+      background: #c6f6d5;
+      border-color: #38a169;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .close {
+      background: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Controle de Rifa 🎟️</h1>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3>Número <span id="modal-number"></span></h3>
+
+      <input type="text" id="nome" placeholder="Nome do comprador">
+      <input type="text" id="contato" placeholder="Contato">
+
+      <select id="status">
+        <option value="pendente">Pendente</option>
+        <option value="pago">Pago</option>
+      </select>
+
+      <button onclick="salvar()">Salvar</button>
+      <button class="close" onclick="fechar()">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const modal = document.getElementById("modal");
+    const modalNumber = document.getElementById("modal-number");
+
+    let dados = JSON.parse(localStorage.getItem("rifa")) || {};
+    let numeroAtual = null;
+
+    function render() {
+      grid.innerHTML = "";
+      for (let i = 1; i <= 100; i++) {
+        const div = document.createElement("div");
+        div.className = "number";
+
+        if (dados[i]) {
+          div.classList.add("vendido");
+          if (dados[i].status === "pago") {
+            div.classList.add("pago");
+          }
+        }
+
+        div.innerText = i;
+        div.onclick = () => abrir(i);
+        grid.appendChild(div);
+      }
+    }
+
+    function abrir(numero) {
+      numeroAtual = numero;
+      modalNumber.innerText = numero;
+
+      document.getElementById("nome").value = dados[numero]?.nome || "";
+      document.getElementById("contato").value = dados[numero]?.contato || "";
+      document.getElementById("status").value = dados[numero]?.status || "pendente";
+
+      modal.style.display = "flex";
+    }
+
+    function fechar() {
+      modal.style.display = "none";
+    }
+
+    function salvar() {
+      const nome = document.getElementById("nome").value;
+      const contato = document.getElementById("contato").value;
+      const status = document.getElementById("status").value;
+
+      if (!nome) {
+        alert("Informe o nome do comprador");
+        return;
+      }
+
+      dados[numeroAtual] = { nome, contato, status };
+      localStorage.setItem("rifa", JSON.stringify(dados));
+
+      fechar();
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
