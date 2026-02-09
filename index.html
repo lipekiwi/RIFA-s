@@ -6,12 +6,13 @@
   <title>Controle de Rifas</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <h1>Controle de Rifas 🎟️</h1>
 
   <div class="tabs">
-    <div class="tab active" onclick="trocarRifa('rifa1', this)">Rifa 1</div>
-    <div class="tab" onclick="trocarRifa('rifa2', this)">Rifa 2</div>
+    <div class="tab active" onclick="trocarRifa('rifa1', this)">Rifa 1 (101–200)</div>
+    <div class="tab" onclick="trocarRifa('rifa2', this)">Rifa 2 (601–700)</div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -19,20 +20,30 @@
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>Número <span id="modal-number"></span></h3>
+
       <input type="text" id="nome" placeholder="Nome do comprador">
       <input type="text" id="contato" placeholder="Contato">
+
       <select id="status">
         <option value="pendente">Pendente</option>
         <option value="pago">Pago</option>
       </select>
+
       <button onclick="salvar()">Salvar</button>
       <button class="close" onclick="fechar()">Cancelar</button>
     </div>
   </div>
 
 <script>
+/* Configuração das rifas */
+const rifasConfig = {
+  rifa1: { inicio: 101, fim: 200 },
+  rifa2: { inicio: 601, fim: 700 }
+};
+
 let rifaAtual = localStorage.getItem("rifaAtual") || "rifa1";
 
+/* Migração da rifa antiga (caso exista) */
 if (!localStorage.getItem("rifa1")) {
   const antiga = localStorage.getItem("rifa");
   if (antiga) {
@@ -44,14 +55,17 @@ if (!localStorage.getItem("rifa1")) {
 const grid = document.getElementById("grid");
 const modal = document.getElementById("modal");
 const modalNumber = document.getElementById("modal-number");
+
 let numeroAtual = null;
 let dados = {};
 
 function trocarRifa(rifa, el) {
   rifaAtual = rifa;
   localStorage.setItem("rifaAtual", rifa);
+
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   el.classList.add("active");
+
   carregar();
 }
 
@@ -62,7 +76,10 @@ function carregar() {
 
 function render() {
   grid.innerHTML = "";
-  for (let i = 1; i <= 100; i++) {
+
+  const { inicio, fim } = rifasConfig[rifaAtual];
+
+  for (let i = inicio; i <= fim; i++) {
     const div = document.createElement("div");
     div.className = "number";
     div.innerText = i;
@@ -73,7 +90,11 @@ function render() {
 
       const tooltip = document.createElement("div");
       tooltip.className = "tooltip";
-      tooltip.innerHTML = `<strong>${dados[i].nome}</strong><br>${dados[i].contato || "Sem contato"}<br>Status: ${dados[i].status}`;
+      tooltip.innerHTML = `
+        <strong>${dados[i].nome}</strong><br>
+        ${dados[i].contato || "Sem contato"}<br>
+        Status: ${dados[i].status}
+      `;
       div.appendChild(tooltip);
     }
 
@@ -85,9 +106,11 @@ function render() {
 function abrir(numero) {
   numeroAtual = numero;
   modalNumber.innerText = numero;
+
   document.getElementById("nome").value = dados[numero]?.nome || "";
   document.getElementById("contato").value = dados[numero]?.contato || "";
   document.getElementById("status").value = dados[numero]?.status || "pendente";
+
   modal.style.display = "flex";
 }
 
@@ -107,6 +130,7 @@ function salvar() {
 
   dados[numeroAtual] = { nome, contato, status };
   localStorage.setItem(rifaAtual, JSON.stringify(dados));
+
   fechar();
   render();
 }
