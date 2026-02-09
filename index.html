@@ -4,182 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Controle de Rifas</title>
-
-  <style>
-    * {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Inter", Arial, sans-serif;
-  background: linear-gradient(180deg, #f8fafc, #eef2f7);
-  padding: 20px;
-  color: #0f172a;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 28px;
-}
-
-/* Abas */
-.tabs {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 25px;
-  flex-wrap: wrap;
-}
-
-.tab {
-  padding: 10px 18px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.tab:hover {
-  background: #dbeafe;
-}
-
-.tab.active {
-  background: #2563eb;
-  color: #fff;
-}
-
-/* Grid de números */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 14px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.number {
-  position: relative;
-  padding: 16px 0;
-  background: #ffffff;
-  border-radius: 14px;
-  text-align: center;
-  cursor: pointer;
-  border: 2px solid transparent;
-  font-weight: 700;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-}
-
-.number:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-}
-
-/* Estados */
-.vendido {
-  background: #fee2e2;
-  border-color: #f87171;
-}
-
-.pago {
-  background: #dcfce7;
-  border-color: #22c55e;
-}
-
-/* Tooltip */
-.tooltip {
-  visibility: hidden;
-  opacity: 0;
-  position: absolute;
-  bottom: 115%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0f172a;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 10;
-  transition: opacity 0.2s ease;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-}
-
-.number:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: #ffffff;
-  padding: 22px;
-  border-radius: 18px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-}
-
-.modal-content h3 {
-  margin-bottom: 10px;
-}
-
-/* Inputs */
-input,
-select,
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: 1px solid #cbd5f5;
-  font-size: 14px;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: #2563eb;
-}
-
-/* Botões */
-button {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-.close {
-
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <h1>Controle de Rifas 🎟️</h1>
 
   <div class="tabs">
-    <div class="tab active" onclick="trocarRifa('rifa1')">Rifa 1 (Encerrada)</div>
-    <div class="tab" onclick="trocarRifa('rifa2')">Rifa 2 (Atual)</div>
+    <div class="tab active" onclick="trocarRifa('rifa1', this)">Rifa 1</div>
+    <div class="tab" onclick="trocarRifa('rifa2', this)">Rifa 2</div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -187,114 +19,99 @@ button:hover {
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>Número <span id="modal-number"></span></h3>
-
       <input type="text" id="nome" placeholder="Nome do comprador">
       <input type="text" id="contato" placeholder="Contato">
-
       <select id="status">
         <option value="pendente">Pendente</option>
         <option value="pago">Pago</option>
       </select>
-
       <button onclick="salvar()">Salvar</button>
       <button class="close" onclick="fechar()">Cancelar</button>
     </div>
   </div>
 
-  <script>
-    let rifaAtual = localStorage.getItem("rifaAtual") || "rifa1";
+<script>
+let rifaAtual = localStorage.getItem("rifaAtual") || "rifa1";
 
-    // Migração automática da rifa antiga
-    if (!localStorage.getItem("rifa1")) {
-      const antiga = localStorage.getItem("rifa");
-      if (antiga) {
-        localStorage.setItem("rifa1", antiga);
-        localStorage.removeItem("rifa");
-      }
+if (!localStorage.getItem("rifa1")) {
+  const antiga = localStorage.getItem("rifa");
+  if (antiga) {
+    localStorage.setItem("rifa1", antiga);
+    localStorage.removeItem("rifa");
+  }
+}
+
+const grid = document.getElementById("grid");
+const modal = document.getElementById("modal");
+const modalNumber = document.getElementById("modal-number");
+let numeroAtual = null;
+let dados = {};
+
+function trocarRifa(rifa, el) {
+  rifaAtual = rifa;
+  localStorage.setItem("rifaAtual", rifa);
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  carregar();
+}
+
+function carregar() {
+  dados = JSON.parse(localStorage.getItem(rifaAtual)) || {};
+  render();
+}
+
+function render() {
+  grid.innerHTML = "";
+  for (let i = 1; i <= 100; i++) {
+    const div = document.createElement("div");
+    div.className = "number";
+    div.innerText = i;
+
+    if (dados[i]) {
+      div.classList.add("vendido");
+      if (dados[i].status === "pago") div.classList.add("pago");
+
+      const tooltip = document.createElement("div");
+      tooltip.className = "tooltip";
+      tooltip.innerHTML = `<strong>${dados[i].nome}</strong><br>${dados[i].contato || "Sem contato"}<br>Status: ${dados[i].status}`;
+      div.appendChild(tooltip);
     }
 
-    function trocarRifa(rifa) {
-      rifaAtual = rifa;
-      localStorage.setItem("rifaAtual", rifa);
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      event.target.classList.add("active");
-      carregar();
-    }
+    div.onclick = () => abrir(i);
+    grid.appendChild(div);
+  }
+}
 
-    const grid = document.getElementById("grid");
-    const modal = document.getElementById("modal");
-    const modalNumber = document.getElementById("modal-number");
-    let numeroAtual = null;
-    let dados = {};
+function abrir(numero) {
+  numeroAtual = numero;
+  modalNumber.innerText = numero;
+  document.getElementById("nome").value = dados[numero]?.nome || "";
+  document.getElementById("contato").value = dados[numero]?.contato || "";
+  document.getElementById("status").value = dados[numero]?.status || "pendente";
+  modal.style.display = "flex";
+}
 
-    function carregar() {
-      dados = JSON.parse(localStorage.getItem(rifaAtual)) || {};
-      render();
-    }
+function fechar() {
+  modal.style.display = "none";
+}
 
-    function render() {
-      grid.innerHTML = "";
-      for (let i = 1; i <= 100; i++) {
-        const div = document.createElement("div");
-        div.className = "number";
-        div.innerText = i;
+function salvar() {
+  const nome = document.getElementById("nome").value;
+  const contato = document.getElementById("contato").value;
+  const status = document.getElementById("status").value;
 
-        if (dados[i]) {
-          div.classList.add("vendido");
-          if (dados[i].status === "pago") div.classList.add("pago");
+  if (!nome) {
+    alert("Informe o nome do comprador");
+    return;
+  }
 
-          const tooltip = document.createElement("div");
-          tooltip.className = "tooltip";
-          tooltip.innerHTML = `
-            <strong>${dados[i].nome}</strong><br>
-            ${dados[i].contato || "Sem contato"}<br>
-            Status: ${dados[i].status}
-          `;
-          div.appendChild(tooltip);
-        }
+  dados[numeroAtual] = { nome, contato, status };
+  localStorage.setItem(rifaAtual, JSON.stringify(dados));
+  fechar();
+  render();
+}
 
-        div.onclick = () => abrir(i);
-        grid.appendChild(div);
-      }
-    }
-
-    function abrir(numero) {
-      numeroAtual = numero;
-      modalNumber.innerText = numero;
-      document.getElementById("nome").value = dados[numero]?.nome || "";
-      document.getElementById("contato").value = dados[numero]?.contato || "";
-      document.getElementById("status").value = dados[numero]?.status || "pendente";
-      modal.style.display = "flex";
-    }
-
-    function fechar() {
-      modal.style.display = "none";
-    }
-
-    function salvar() {
-      const nome = document.getElementById("nome").value;
-      const contato = document.getElementById("contato").value;
-      const status = document.getElementById("status").value;
-
-      if (!nome) {
-        alert("Informe o nome do comprador");
-        return;
-      }
-
-      dados[numeroAtual] = { nome, contato, status };
-      localStorage.setItem(rifaAtual, JSON.stringify(dados));
-      fechar();
-      render();
-    }
-
-    // Ativar aba correta
-    document.querySelectorAll(".tab").forEach(tab => {
-      if (tab.innerText.includes(rifaAtual.slice(-1))) {
-        tab.classList.add("active");
-      }
-    });
-
-    carregar();
-  </script>
+carregar();
+</script>
 </body>
 </html>
