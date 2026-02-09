@@ -6,120 +6,171 @@
   <title>Controle de Rifas</title>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
+    * {
+  box-sizing: border-box;
+}
 
-    h1 {
-      text-align: center;
-    }
+body {
+  font-family: "Inter", Arial, sans-serif;
+  background: linear-gradient(180deg, #f8fafc, #eef2f7);
+  padding: 20px;
+  color: #0f172a;
+}
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
 
-    .tab {
-      padding: 10px 15px;
-      background: #ddd;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+/* Abas */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
 
-    .tab.active {
-      background: #2563eb;
-      color: #fff;
-    }
+.tab {
+  padding: 10px 18px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-      gap: 10px;
-    }
+.tab:hover {
+  background: #dbeafe;
+}
 
-    .number {
-      position: relative;
-      padding: 15px;
-      background: #fff;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid #ccc;
-      font-weight: bold;
-    }
+.tab.active {
+  background: #2563eb;
+  color: #fff;
+}
 
-    .vendido {
-      background: #ffcccc;
-      border-color: #ff4d4d;
-    }
+/* Grid de números */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-    .pago {
-      background: #c6f6d5;
-      border-color: #38a169;
-    }
+.number {
+  position: relative;
+  padding: 16px 0;
+  background: #ffffff;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
 
-    .tooltip {
-      visibility: hidden;
-      opacity: 0;
-      position: absolute;
-      bottom: 110%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      white-space: nowrap;
-      z-index: 10;
-      transition: opacity 0.2s;
-    }
+.number:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
 
-    .number:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
-    }
+/* Estados */
+.vendido {
+  background: #fee2e2;
+  border-color: #f87171;
+}
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
+.pago {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
 
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-    }
+/* Tooltip */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
 
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-    }
+.number:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
 
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
 
-    .close {
-      background: #aaa;
-    }
+.modal-content {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+/* Inputs */
+input,
+select,
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* Botões */
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.close {
+
   </style>
 </head>
 
