@@ -1,0 +1,72 @@
+*{box-sizing:border-box}
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:linear-gradient(180deg,#f8fafc,#eef2f7);
+  padding:20px;
+  color:#0f172a
+}
+h1{text-align:center;margin-bottom:20px}
+.tabs{display:flex;justify-content:center;gap:12px;margin-bottom:25px;flex-wrap:wrap}
+.tab{padding:10px 18px;background:#e5e7eb;border-radius:999px;cursor:pointer;font-weight:600;transition:.2s}
+.tab.active{background:#2563eb;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:14px;max-width:900px;margin:0 auto}
+.number{
+  position:relative;
+  padding:16px 0;
+  background:#fff;
+  border-radius:14px;
+  text-align:center;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
+  transition:.2s
+}
+.number:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.vendido{background:#fee2e2}
+.pago{background:#dcfce7}
+.tooltip{
+  visibility:hidden;
+  opacity:0;
+  position:absolute;
+  bottom:115%;
+  left:50%;
+  transform:translateX(-50%);
+  background:#0f172a;
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  font-size:12px;
+  white-space:nowrap;
+  transition:.2s
+}
+.number:hover .tooltip{visibility:visible;opacity:1}
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.6);
+  display:none;
+  align-items:center;
+  justify-content:center
+}
+.modal-content{
+  background:#fff;
+  padding:22px;
+  border-radius:18px;
+  width:90%;
+  max-width:420px
+}
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid #cbd5f5
+}
+button{
+  background:#2563eb;
+  color:#fff;
+  font-weight:600;
+  border:none;
+  cursor:pointer
+}
+.close{background:#e5e7eb;color:#0f172a}
